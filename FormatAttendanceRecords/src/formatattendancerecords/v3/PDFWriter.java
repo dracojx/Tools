@@ -7,9 +7,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -26,7 +28,7 @@ public class PDFWriter {
 	
 	public static final int COLUMNS_OF_TABLE = 7;
 
-	private final Calendar calendar;
+	private Calendar calendar;
 	private Collection<Department> departments;
 	private String filename;
 	private BaseFont baseFont;
@@ -77,17 +79,97 @@ public class PDFWriter {
 		fWeek.setSize(12);
 		fDay.setSize(9);
 		
-		List<PdfPCell> cells = new ArrayList<PdfPCell>();
+		Map<String, List<PdfPCell>> cells = new HashMap<String, List<PdfPCell>>();
 	
+		int row = 0;
+		cells.put(Integer.toString(row), new ArrayList<PdfPCell>());
 		for(int i = 0; i < COLUMNS_OF_TABLE; i++) {
 			PdfPCell cell = new PdfPCell(new Phrase(DateUtil.WEEK[i], fWeek));
-			cells.add(cell);
+			cells.get(Integer.toString(row)).add(cell);
+		}
+
+		DateUtil.setLastDayOfMonth(calendar);
+		int end = calendar.get(Calendar.DAY_OF_MONTH);
+		DateUtil.setFirstDayOfMonth(calendar);
+		int begin = calendar.get(Calendar.DAY_OF_MONTH);
+		int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+		
+		row = 1;
+		cells.put(Integer.toString(row), new ArrayList<PdfPCell>());
+		for(int i = 1; i < dayOfWeek; i++) {
+			PdfPCell cell = new PdfPCell();
+			cells.get(Integer.toString(row)).add(cell);
 		}
 		
-		PdfPTable table = new PdfPTable(COLUMNS_OF_TABLE);
+		for(int i = begin; i <= end; i++) {
+			String date = DateUtil.formatDate(calendar, "yyyy-MM-dd");
+			PdfPCell cell = new PdfPCell(new Phrase(date, fDay));
+			cells.get(Integer.toString(row)).add(cell);
+			
+			if((i + dayOfWeek - 1) % COLUMNS_OF_TABLE == 0) {
+				row += 2;
+				cells.put(Integer.toString(row), new ArrayList<PdfPCell>());
+			}
+			
+			calendar.add(Calendar.DAY_OF_MONTH, 1);
+		}
+		dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+		for(int i = dayOfWeek; i <= COLUMNS_OF_TABLE; i++) {
+			PdfPCell cell = new PdfPCell();
+			cells.get(Integer.toString(row)).add(cell);
+		}
 		
-		for(PdfPCell cell : cells) {
-			table.addCell(cell);
+		calendar.add(Calendar.MONTH, -1);
+		dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+		row = 2;
+		cells.put(Integer.toString(row), new ArrayList<PdfPCell>());
+		for(int i = 1; i < dayOfWeek; i++) {
+			PdfPCell cell = new PdfPCell();
+			cells.get(Integer.toString(row)).add(cell);
+		}
+		
+		for(int i = begin; i <= end; i++) {
+			String date = DateUtil.formatDate(calendar, "yyyy-MM-dd");
+			Day day = days.get(date);
+			PdfPCell cell = new PdfPCell();
+			if(day != null) {
+				Set<String> times = day.getTimes();
+				System.out.print(times.size());
+				for(String time : times) {
+					cell.addElement(new Phrase(time, fDay));
+				}
+			}
+			cells.get(Integer.toString(row)).add(cell);
+			
+			if((i + dayOfWeek - 1) % COLUMNS_OF_TABLE == 0) {
+				row += 2;
+				cells.put(Integer.toString(row), new ArrayList<PdfPCell>());
+			}
+			
+			calendar.add(Calendar.DAY_OF_MONTH, 1);
+		}
+		
+		dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+		for(int i = dayOfWeek; i <= COLUMNS_OF_TABLE; i++) {
+			PdfPCell cell = new PdfPCell();
+			cells.get(Integer.toString(row)).add(cell);
+		}
+		
+		calendar.add(Calendar.MONTH, -1);
+		
+		PdfPTable table = new PdfPTable(COLUMNS_OF_TABLE);
+		table.setHorizontalAlignment(PdfPTable.ALIGN_LEFT);
+		table.setSpacingBefore(5);
+		
+		for(int i = 0; i < cells.size(); i++) {
+			List<PdfPCell> list = cells.get(Integer.toString(i));
+			if(list != null) {
+				for(PdfPCell cell : list) {
+					table.addCell(cell);
+					if(i == 10) {
+					}
+				}
+			}
 		}
 		
 		return table;
