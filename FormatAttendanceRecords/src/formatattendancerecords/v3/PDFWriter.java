@@ -85,6 +85,7 @@ public class PDFWriter {
 		cells.put(Integer.toString(row), new ArrayList<PdfPCell>());
 		for(int i = 0; i < COLUMNS_OF_TABLE; i++) {
 			PdfPCell cell = new PdfPCell(new Phrase(DateUtil.WEEK[i], fWeek));
+			cell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
 			cells.get(Integer.toString(row)).add(cell);
 		}
 
@@ -97,13 +98,15 @@ public class PDFWriter {
 		row = 1;
 		cells.put(Integer.toString(row), new ArrayList<PdfPCell>());
 		for(int i = 1; i < dayOfWeek; i++) {
-			PdfPCell cell = new PdfPCell();
+			PdfPCell cell = new PdfPCell(new Phrase(" ", fDay));
+			cell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
 			cells.get(Integer.toString(row)).add(cell);
 		}
 		
 		for(int i = begin; i <= end; i++) {
 			String date = DateUtil.formatDate(calendar, "yyyy-MM-dd");
 			PdfPCell cell = new PdfPCell(new Phrase(date, fDay));
+			cell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
 			cells.get(Integer.toString(row)).add(cell);
 			
 			if((i + dayOfWeek - 1) % COLUMNS_OF_TABLE == 0) {
@@ -131,14 +134,19 @@ public class PDFWriter {
 		for(int i = begin; i <= end; i++) {
 			String date = DateUtil.formatDate(calendar, "yyyy-MM-dd");
 			Day day = days.get(date);
-			PdfPCell cell = new PdfPCell();
+			StringBuffer sb = new StringBuffer();
 			if(day != null) {
 				Set<String> times = day.getTimes();
-				System.out.print(times.size());
 				for(String time : times) {
-					cell.addElement(new Phrase(time, fDay));
+					sb.append(time).append("\n");
 				}
+			} else {
+				sb.append("\n\n");
 			}
+			
+			PdfPCell cell = new PdfPCell(new Phrase(sb.toString(), fDay));
+			cell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+			cell.setVerticalAlignment(PdfPCell.ALIGN_BOTTOM);
 			cells.get(Integer.toString(row)).add(cell);
 			
 			if((i + dayOfWeek - 1) % COLUMNS_OF_TABLE == 0) {
