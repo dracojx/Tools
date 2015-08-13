@@ -72,29 +72,32 @@ public class PDFWriter {
 		return para;
 	}
 	
-	private PdfPTable getTable(Map<String, Day> days) {
-		Font fWeek = new Font(baseFont);
-		Font fDay = new Font(baseFont);
-		fWeek.setStyle(Font.BOLD);
-		fWeek.setSize(12);
-		fDay.setSize(9);
-		
-		Map<String, List<PdfPCell>> cells = new HashMap<String, List<PdfPCell>>();
-	
+	private void getWeekCells(Map<String, List<PdfPCell>> cells) {
+		Font font = new Font(baseFont);
+		font.setStyle(Font.BOLD);
+		font.setSize(12);
 		int row = 0;
+		
 		cells.put(Integer.toString(row), new ArrayList<PdfPCell>());
 		for(int i = 0; i < COLUMNS_OF_TABLE; i++) {
-			PdfPCell cell = new PdfPCell(new Phrase(DateUtil.WEEK[i], fWeek));
+			PdfPCell cell = new PdfPCell(new Phrase(DateUtil.WEEK[i], font));
+			cell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+			cell.setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
 			cells.get(Integer.toString(row)).add(cell);
 		}
-
+	}
+	
+	private void getDateCells(Map<String, List<PdfPCell>> cells) {
+		Font font = new Font(baseFont);
+		font.setSize(9);
+		int row = 1;
+		
 		DateUtil.setLastDayOfMonth(calendar);
 		int end = calendar.get(Calendar.DAY_OF_MONTH);
 		DateUtil.setFirstDayOfMonth(calendar);
 		int begin = calendar.get(Calendar.DAY_OF_MONTH);
 		int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 		
-		row = 1;
 		cells.put(Integer.toString(row), new ArrayList<PdfPCell>());
 		for(int i = 1; i < dayOfWeek; i++) {
 			PdfPCell cell = new PdfPCell();
@@ -103,7 +106,9 @@ public class PDFWriter {
 		
 		for(int i = begin; i <= end; i++) {
 			String date = DateUtil.formatDate(calendar, "yyyy-MM-dd");
-			PdfPCell cell = new PdfPCell(new Phrase(date, fDay));
+			
+			PdfPCell cell = new PdfPCell(new Phrase(date, font));
+			cell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
 			cells.get(Integer.toString(row)).add(cell);
 			
 			if((i + dayOfWeek - 1) % COLUMNS_OF_TABLE == 0) {
@@ -120,8 +125,19 @@ public class PDFWriter {
 		}
 		
 		calendar.add(Calendar.MONTH, -1);
-		dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-		row = 2;
+	}
+
+	private void getTimeCells(Map<String, List<PdfPCell>> cells, Map<String, Day> days) {
+		Font font = new Font(baseFont);
+		font.setSize(9);
+		
+		DateUtil.setLastDayOfMonth(calendar);
+		int end = calendar.get(Calendar.DAY_OF_MONTH);
+		DateUtil.setFirstDayOfMonth(calendar);
+		int begin = calendar.get(Calendar.DAY_OF_MONTH);
+		int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+		
+		int row = 2;
 		cells.put(Integer.toString(row), new ArrayList<PdfPCell>());
 		for(int i = 1; i < dayOfWeek; i++) {
 			PdfPCell cell = new PdfPCell();
@@ -131,14 +147,18 @@ public class PDFWriter {
 		for(int i = begin; i <= end; i++) {
 			String date = DateUtil.formatDate(calendar, "yyyy-MM-dd");
 			Day day = days.get(date);
-			PdfPCell cell = new PdfPCell();
+			StringBuffer sb = new StringBuffer();
 			if(day != null) {
 				Set<String> times = day.getTimes();
-				System.out.print(times.size());
 				for(String time : times) {
-					cell.addElement(new Phrase(time, fDay));
+					sb.append(time).append("\n");
 				}
+			} else {
+				sb.append("\n\n");
 			}
+			PdfPCell cell = new PdfPCell(new Phrase(sb.toString(), font));
+			cell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+			cell.setVerticalAlignment(PdfPCell.ALIGN_BOTTOM);
 			cells.get(Integer.toString(row)).add(cell);
 			
 			if((i + dayOfWeek - 1) % COLUMNS_OF_TABLE == 0) {
@@ -148,14 +168,24 @@ public class PDFWriter {
 			
 			calendar.add(Calendar.DAY_OF_MONTH, 1);
 		}
-		
+
+		calendar.add(Calendar.MONTH, -1);
 		dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 		for(int i = dayOfWeek; i <= COLUMNS_OF_TABLE; i++) {
 			PdfPCell cell = new PdfPCell();
 			cells.get(Integer.toString(row)).add(cell);
 		}
 		
-		calendar.add(Calendar.MONTH, -1);
+	}
+	
+	private PdfPTable getTable(Map<String, Day> days) {
+		Font fDay = new Font(baseFont);
+		fDay.setSize(9);
+		
+		Map<String, List<PdfPCell>> cells = new HashMap<String, List<PdfPCell>>();
+		getWeekCells(cells);
+		getDateCells(cells);
+		getTimeCells(cells, days);
 		
 		PdfPTable table = new PdfPTable(COLUMNS_OF_TABLE);
 		table.setHorizontalAlignment(PdfPTable.ALIGN_LEFT);
@@ -166,8 +196,6 @@ public class PDFWriter {
 			if(list != null) {
 				for(PdfPCell cell : list) {
 					table.addCell(cell);
-					if(i == 10) {
-					}
 				}
 			}
 		}

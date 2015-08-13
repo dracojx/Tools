@@ -15,6 +15,7 @@ import com.itextpdf.text.DocumentException;
 public class PDFReader {
 
 	public static void main(String[] args) throws DocumentException, IOException {
+		long start = System.currentTimeMillis();
 		String[] filenames = FileUtil.getFilenames();
 		for(int i = 0; i < filenames.length; i++) {
 			String filename = filenames[i];
@@ -23,10 +24,12 @@ public class PDFReader {
 			Data data = new Data(lines);
 			Calendar calendar = data.getCalendar();
 			Collection<Department> departments = data.getDepartments();
-			String file = "results\\考勤记录表_" + filename;
+			String file = "我选周杰伦\\" + filename;
 			PDFWriter writer = new PDFWriter(calendar, departments, file);
 			writer.write();
 		}
+		long finish = System.currentTimeMillis();
+		System.out.println("用时:" + (finish - start) + "毫秒");
 	}
 
 	private static String getText(String filename) {
