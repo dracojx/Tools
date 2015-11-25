@@ -3,6 +3,7 @@ package draco.pi.http.servlet;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -60,14 +61,15 @@ public class Test001 extends HttpServlet {
 							+"<RECEIVER>TEST</RECEIVER>"
 							+"<DTSEND>" + DateUtil.createDTSEND() + "</DTSEND>"
 							+"</HEADER>"
-							+"<XML_DATA>"
-							+"<TEST001>"
-							+"<ID>0123456</ID>"
-							+"<AMOUNT>100</AMOUNT>"
-							+"<DATE>20151125</DATE>"
-							+"</TEST001>"
-							+"</XML_DATA>"
-							+"</ns0:MT_TEST001_Req>";
+							+"<XML_DATA>";
+		for(int i = 0; i < 10; i++) {
+			responseXml += "<TEST001>"
+						+  "<ID>" + (i + 101) + "</ID>"
+						+  "<AMOUNT>" + ((i + 1) * 222) + "</AMOUNT>"
+						+  "<DATE>" + DateUtil.format(new Date(), "yyyyMMdd") + "</DATE>"
+						+  "</TEST001>";
+		}
+		responseXml	+="</XML_DATA></ns0:MT_TEST001_Req>";
 		
 		response.setContentType("text/xml;charset=UTF-8");
 		Writer out = response.getWriter();

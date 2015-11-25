@@ -54,11 +54,14 @@ public class CallStub {
 		header.setDTSEND(ConvertUtil.dtSend(DateUtil.createDTSEND()));
 		
 		XML_DATA_type0 xmlData = new XML_DATA_type0();
-		TEST001_type0 test001 = new TEST001_type0();
-		test001.setID(ConvertUtil.test001Id("0123456"));
-		test001.setAMOUNT(ConvertUtil.test001Amount(Integer.toString(10000)));
-		test001.setDATE(ConvertUtil.test001Date(DateUtil.format(new Date(), "yyyyMMdd")));
-		xmlData.setTEST001(test001);
+		
+		for(int i = 0; i < 10; i++) {
+			TEST001_type0 test001 = new TEST001_type0();
+			test001.setID(ConvertUtil.test001Id(Integer.toString(i+1)));
+			test001.setAMOUNT(ConvertUtil.test001Amount(Integer.toString((i+1)*111)));
+			test001.setDATE(ConvertUtil.test001Date(DateUtil.format(new Date(), "yyyyMMdd")));
+			xmlData.addTEST001(test001);
+		}
 		
 		dtTest001.setHEADER(header);
 		dtTest001.setXML_DATA(xmlData);
@@ -71,6 +74,7 @@ public class CallStub {
 		StringBuffer sb = new StringBuffer();
 		DT_TEST001 dtTest001 = mtTest001Req.getMT_TEST001_Req();
 		HEADER_type0 header = dtTest001.getHEADER();
+		sb.append("\nHEADER:\n");
 		sb.append("INTERFACE_ID:").append(header.getINTERFACE_ID().getINTERFACE_ID_type0()).append("\n");
 		sb.append("MESSAGE_ID:").append(header.getMESSAGE_ID().getMESSAGE_ID_type0()).append("\n");	
 		sb.append("SENDER:").append(header.getSENDER().getSENDER_type0()).append("\n");	
@@ -78,10 +82,14 @@ public class CallStub {
 		sb.append("DTSEND:").append(header.getDTSEND().getDTSEND_type0()).append("\n");	
 		
 		XML_DATA_type0 xmlData = dtTest001.getXML_DATA();
-		TEST001_type0 test001 = xmlData.getTEST001();
-		sb.append("ID:").append(test001.getID().getID_type0()).append("\n");
-		sb.append("AMOUNT").append(test001.getAMOUNT().getAMOUNT_type0()).append("\n");	
-		sb.append("DATE:").append(test001.getDATE().getDATE_type0()).append("\n");
+		TEST001_type0[] test001Array = xmlData.getTEST001();
+		for(int i = 0; i < test001Array.length; i++) {
+			TEST001_type0 test001 = test001Array[i];
+			sb.append("\nTEST001:\n");
+			sb.append("ID:").append(test001.getID().getID_type0()).append("\n");
+			sb.append("AMOUNT:").append(test001.getAMOUNT().getAMOUNT_type0()).append("\n");	
+			sb.append("DATE:").append(test001.getDATE().getDATE_type0()).append("\n");
+		}
 		return sb.toString();
 	}
 

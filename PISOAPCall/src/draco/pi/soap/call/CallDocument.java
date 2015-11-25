@@ -50,7 +50,6 @@ public class CallDocument {
 		
 		OMElement header = factory.createOMElement("HEADER", null, method);
 		OMElement xmlData = factory.createOMElement("XML_DATA", null, method);
-		OMElement test001 = factory.createOMElement("TEST001", null, xmlData);
 		
 		
 		OMElement interfaceId = factory.createOMElement("INTERFACE_ID", null, header);
@@ -58,10 +57,6 @@ public class CallDocument {
 		OMElement sender = factory.createOMElement("SENDER", null, header);
 		OMElement receiver = factory.createOMElement("RECEIVER", null, header);
 		OMElement dtSend = factory.createOMElement("DTSEND", null, header);
-
-		OMElement id = factory.createOMElement("ID", null, test001);
-		OMElement amount = factory.createOMElement("AMOUNT", null, test001);
-		OMElement date = factory.createOMElement("DATE", null, test001);
 		
 		interfaceId.setText("TEST001");
 		messageId.setText(UUIDUtil.createUUID());
@@ -69,9 +64,17 @@ public class CallDocument {
 		receiver.setText("TEST");
 		dtSend.setText(DateUtil.createDTSEND());
 		
-		id.setText("0123456");
-		amount.setText("123");
-		date.setText(DateUtil.format(new Date(), "yyyyMMdd"));
+		for(int i = 0; i < 10; i++) {
+			OMElement test001 = factory.createOMElement("TEST001", null, xmlData);
+
+			OMElement id = factory.createOMElement("ID", null, test001);
+			OMElement amount = factory.createOMElement("AMOUNT", null, test001);
+			OMElement date = factory.createOMElement("DATE", null, test001);
+			
+			id.setText(Integer.toString(i + 1001));
+			amount.setText(Integer.toString((i + 11) * 11));
+			date.setText(DateUtil.format(new Date(), "yyyyMMdd"));
+		}
 		
 		method.build();
 		
