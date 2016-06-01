@@ -51,30 +51,30 @@ public class Test001 extends HttpServlet {
 		String requestXml = sb.toString();
 		System.out.println(url);
 		System.out.println(requestXml);
-		
-		String responseXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-							+"<ns0:MT_TEST001_Req xmlns:ns0=\"http://test2.gome.com\">"
-							+"<HEADER>"
-							+"<INTERFACE_ID>TEST001</INTERFACE_ID>"
-							+"<MESSAGE_ID>" + UUIDUtil.createUUID() + "</MESSAGE_ID>"
-							+"<SENDER>TEST</SENDER>"
-							+"<RECEIVER>TEST</RECEIVER>"
-							+"<DTSEND>" + DateUtil.createDTSEND() + "</DTSEND>"
-							+"</HEADER>"
-							+"<XML_DATA>";
-		for(int i = 0; i < 10; i++) {
-			responseXml += "<TEST001>"
-						+  "<ID>" + (i + 101) + "</ID>"
-						+  "<AMOUNT>" + ((i + 1) * 222) + "</AMOUNT>"
-						+  "<DATE>" + DateUtil.format(new Date(), "yyyyMMdd") + "</DATE>"
-						+  "</TEST001>";
-		}
-		responseXml	+="</XML_DATA></ns0:MT_TEST001_Req>";
-		
-		response.setContentType("text/xml;charset=UTF-8");
-		Writer out = response.getWriter();
-		out.write(responseXml);
-		out.close();
+//		
+//		String responseXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+//							+"<ns0:MT_TEST001_Req xmlns:ns0=\"http://test2.gome.com\">"
+//							+"<HEADER>"
+//							+"<INTERFACE_ID>TEST001</INTERFACE_ID>"
+//							+"<MESSAGE_ID>" + UUIDUtil.createUUID() + "</MESSAGE_ID>"
+//							+"<SENDER>TEST</SENDER>"
+//							+"<RECEIVER>TEST</RECEIVER>"
+//							+"<DTSEND>" + DateUtil.createDTSEND() + "</DTSEND>"
+//							+"</HEADER>"
+//							+"<XML_DATA>";
+//		for(int i = 0; i < 10; i++) {
+//			responseXml += "<TEST001>"
+//						+  "<ID>" + (i + 101) + "</ID>"
+//						+  "<AMOUNT>" + ((i + 1) * 222) + "</AMOUNT>"
+//						+  "<DATE>" + DateUtil.format(new Date(), "yyyyMMdd") + "</DATE>"
+//						+  "</TEST001>";
+//		}
+//		responseXml	+="</XML_DATA></ns0:MT_TEST001_Req>";
+//		
+//		response.setContentType("text/xml;charset=UTF-8");
+//		Writer out = response.getWriter();
+//		out.write(responseXml);
+//		out.close();
 	}
 
 }
