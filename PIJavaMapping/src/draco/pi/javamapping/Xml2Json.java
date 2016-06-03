@@ -71,6 +71,7 @@ public class Xml2Json extends AbstractTransformation {
 
 		String jsonString = json.toString().replace("[]", "\"\"");
 		System.out.println(jsonString);
+		scanner.close();
 	}
 
 }
