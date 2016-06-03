@@ -1,4 +1,4 @@
-package exceltoxsd;
+package draco.exceltoxsd;
 
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
