@@ -1,4 +1,4 @@
-package exceltoxsd.v3;
+package exceltoxsd;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;

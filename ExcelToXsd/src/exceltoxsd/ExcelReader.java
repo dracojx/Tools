@@ -1,4 +1,4 @@
-package exceltoxsd.v3;
+package exceltoxsd;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

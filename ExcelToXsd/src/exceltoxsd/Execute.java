@@ -1,4 +1,4 @@
-package exceltoxsd.v3;
+package exceltoxsd;
 
 public class Execute {
 
